@@ -9,5 +9,5 @@
     spec:
       ref:
         kind: openapi
-        spec: gitbook-petstore
+        spec: JapaneseAPI
   ```

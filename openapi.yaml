@@ -1,0 +1,431 @@
+openapi: 3.0.4
+info:
+  title: 氏名漢字カナ突合API
+  description: |-
+
+  termsOfService: https://developers.digital.go.jp/documents/name-matching-support/terms-of-use/
+  license:
+    name: MIT License
+    url: https://opensource.org/license/mit
+  version: 1.8o
+servers:
+  - url: https://api.kktg.digital.go.jp/v1
+    description: 本番環境（v1）
+paths:
+  /simple:
+    get:
+      summary: 氏名簡易突合
+      description: |-
+        入力された漢字・アルファベット氏名とカナ氏名の簡易突合を行う。
+
+        パラメータに設定可能な氏名の漢字 (kanji) とカナ (kana) のパターン例は下表を参照。
+
+        | 含まれる氏名情報   | kanji                 | kana |
+        | :---               | :---                  | :--- |
+        | 漢字氏名           | 日本　花子            | ニッポン　ハナコ   |
+        | 漢字氏名＋旧氏     | 日本［東京］　花子    | ニッポン　ハナコ   |
+        |^                   |^                      | トウキョウ　ハナコ |
+        | アルファベット氏名 | ＮＩＰＰＯＮ　ＨＡＮＡＫＯ             | ニッポン　ハナコ |
+        |^                   | ＮＩＰＰＯＮ　ＪＡＰＡＮ　ＨＡＮＡＫＯ | ニッポン　ジャパン　ハナコ |
+        |^                   | ＨＡＮＡＫＯ　ＪＡＰＡＮ　ＮＩＰＰＯＮ | ニッポン　ジャパン　ハナコ |
+        | アルファベット氏名＋漢字氏名 | ＮＩＰＰＯＮ　ＪＡＰＡＮ　ＨＡＮＡＫＯ＿日本　花子 | ニッポン　ジャパン　ハナコ |
+        |^                             |^                                                   | ニッポン　ハナコ           |
+        | アルファベット氏名＋漢字氏名＋通称 | ＮＩＰＰＯＮ　ＪＡＰＡＮ　ＨＡＮＡＫＯ＿日本　花子（東京　花子） | ニッポン　ハナコ           |
+        |^                                   |^                                                                 | ニッポン　ジャパン　ハナコ |
+        |^                                   |^                                                                 | トウキョウ　ハナコ         |
+      operationId: matchSimple
+      parameters:
+        - name: kanji
+          in: query
+          description: 漢字・アルファベット氏名
+          required: true
+          schema:
+            type: string
+            example: 日本［東京］　花子
+            minimum: 1
+            maximum: 100
+        - name: kana
+          in: query
+          description: カナ氏名
+          required: true
+          schema:
+            type: string
+            example: トウキョウ　ハナコ
+            minimum: 1
+            maximum: 100
+        - name: key
+          in: query
+          description: APIキー
+          required: true
+          schema:
+            type: string
+            example: REPLACE_WITH_YOUR_API_KEY
+            minimum: 32
+            maximum: 32
+      responses:
+        "200":
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseMatchSuccess"
+        "403":
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseAuthFailed"
+  /detail:
+    get:
+      summary: 氏名詳細突合
+      description: |-
+        入力された漢字・アルファベット氏名とカナ氏名の詳細突合を行う。
+
+        パラメータに設定可能な氏名の漢字 (kanji) とカナ (kana) のパターン例は下表を参照。
+
+        | 含まれる氏名情報   | kanji                 | kana |
+        | :---               | :---                  | :--- |
+        | 漢字氏名           | 日本　花子            | ニッポン　ハナコ   |
+        | 漢字氏名＋旧氏     | 日本［東京］　花子    | ニッポン　ハナコ   |
+        |^                   |^                      | トウキョウ　ハナコ |
+        | アルファベット氏名 | ＮＩＰＰＯＮ　ＨＡＮＡＫＯ             | ニッポン　ハナコ |
+        |^                   | ＮＩＰＰＯＮ　ＪＡＰＡＮ　ＨＡＮＡＫＯ | ニッポン　ジャパン　ハナコ |
+        |^                   | ＨＡＮＡＫＯ　ＪＡＰＡＮ　ＮＩＰＰＯＮ | ニッポン　ジャパン　ハナコ |
+        | アルファベット氏名＋漢字氏名 | ＮＩＰＰＯＮ　ＪＡＰＡＮ　ＨＡＮＡＫＯ＿日本　花子 | ニッポン　ジャパン　ハナコ |
+        |^                             |^                                                   | ニッポン　ハナコ           |
+        | アルファベット氏名＋漢字氏名＋通称 | ＮＩＰＰＯＮ　ＪＡＰＡＮ　ＨＡＮＡＫＯ＿日本　花子（東京　花子） | ニッポン　ハナコ           |
+        |^                                   |^                                                                 | ニッポン　ジャパン　ハナコ |
+        |^                                   |^                                                                 | トウキョウ　ハナコ         |
+      operationId: matchDetail
+      parameters:
+        - name: kanji
+          in: query
+          description: 漢字・アルファベット氏名
+          required: true
+          schema:
+            type: string
+            example: 日本［東京］　花子
+            minimum: 1
+            maximum: 100
+        - name: kana
+          in: query
+          description: カナ氏名
+          required: true
+          schema:
+            type: string
+            example: トウキョウ　ハナコ
+            minimum: 1
+            maximum: 100
+        - name: key
+          in: query
+          description: APIキー
+          required: true
+          schema:
+            type: string
+            example: REPLACE_WITH_YOUR_API_KEY
+            minimum: 32
+            maximum: 32
+      responses:
+        "200":
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseMatchSuccess"
+        "403":
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseAuthFailed"
+  /kanji:
+    get:
+      summary: 漢字氏名推定
+      description: |-
+        カナ氏名から漢字氏名の候補を推定する。
+      operationId: predictKanji
+      parameters:
+        - name: kana
+          in: query
+          description: カナ氏名
+          required: true
+          schema:
+            type: string
+            example: トウキョウ　ハナコ
+            minimum: 1
+            maximum: 100
+        - name: key
+          in: query
+          description: APIキー
+          required: true
+          schema:
+            type: string
+            example: REPLACE_WITH_YOUR_API_KEY
+            minimum: 32
+            maximum: 32
+        - name: max
+          in: query
+          description: 最大返却数
+          required: false
+          schema:
+            type: integer
+            example: 5
+            minimum: 1
+            default: 5
+            maximum: 10
+      responses:
+        "200":
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responsePredictKanjiSuccess"
+        "403":
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseAuthFailed"
+  /kana:
+    get:
+      summary: カナ氏名推定
+      description: |-
+        入力された漢字・アルファベット氏名からカナ氏名の候補を推定する。
+      operationId: predictKana
+      parameters:
+        - name: kanji
+          in: query
+          description: 漢字・アルファベット氏名
+          required: true
+          schema:
+            type: string
+            example: 日本［東京］　花子
+            minimum: 1
+            maximum: 100
+        - name: key
+          in: query
+          description: APIキー
+          required: true
+          schema:
+            type: string
+            example: REPLACE_WITH_YOUR_API_KEY
+            minimum: 32
+            maximum: 32
+        - name: max
+          in: query
+          description: 最大返却数
+          required: false
+          schema:
+            type: integer
+            example: 10
+            minimum: 1
+            default: 5
+            maximum: 10
+      responses:
+        "200":
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responsePredictKanaSuccess"
+        "403":
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseAuthFailed"
+
+components:
+  schemas:
+    responseMatchSuccess:
+      description: |-
+        氏名突合成功レスポンス
+      type: object
+      properties:
+        response:
+          type: string
+          example: OK
+          description: |-
+            | 応答コード | 説明 |
+            | :---       | :--- |
+            | OK         | 正常終了 |
+            | E001       | クエリパラメータ kanji の設定がされていない、又は例外値 (文字長0) が設定されている |
+            | E002       | クエリパラメータ kana の設定がされていない、又は例外値 (文字長0) が設定されている |
+            | E010       | クエリパラメータ max に例外値が設定されている |
+            | E100       | 内部エラー |
+            | E404       | HTTP 404 エラー |
+            | E500       | HTTP 500 エラー |
+        result:
+          type: object
+          description: |-
+            response が "OK" の場合、結果を格納したオブジェクトを返却する。
+            response が "OK" 以外の場合、空のオブジェクト "{}" を返却する。
+          properties:
+            status:
+              type: integer
+              example: 90
+              minimum: 0
+              maximum: 99
+              description: |-
+                推定正解度合
+        version:
+          type: string
+          example: 1.8o
+          description: |-
+            氏名漢字カナ突合モデルのバージョン
+    responsePredictKanjiSuccess:
+      description: |-
+        漢字氏名推定成功レスポンス
+      type: object
+      properties:
+        response:
+          type: string
+          example: OK
+          description: |-
+            | 応答コード | 説明 |
+            | :---       | :--- |
+            | OK         | 正常終了 |
+            | E002       | クエリパラメータ kana の設定がされていない、又は例外値 (文字長0) が設定されている |
+            | E010       | クエリパラメータ max に例外値が設定されている |
+            | E100       | 内部エラー |
+            | E404       | HTTP 404 エラー |
+            | E500       | HTTP 500 エラー |
+        result:
+          type: object
+          description: |-
+            response が "OK" の場合、結果を格納したオブジェクトを返却する。
+            response が "OK" 以外の場合、空のオブジェクト "{}" を返却する。
+          properties:
+            status:
+              type: integer
+              example: OK
+              description: |-
+                | 応答コード | 説明 |
+                | :---       | :--- |
+                | OK         | 正常終了 |
+                | NG         | 異常終了 |
+            probability:
+              type: array
+              example:
+                [
+                  0.4825615885836141,
+                  0.020703272421234174,
+                  0.0002177858504058593,
+                  0.00008489041374228077,
+                  0.000057109595304728965,
+                ]
+              description: |-
+                候補の推定正解確率（確率降順）
+              items:
+                type: number
+                example: 0.4825615885836141
+                minimum: 0
+                maximum: 1
+                description: |-
+                  推定正解確率
+            kanji:
+              type: array
+              example:
+                [
+                  "日本花子",
+                  "日本華子",
+                  "日本はなこ",
+                  "日本ハナコ",
+                  "日本はな子",
+                ]
+              description: |-
+                候補（確率降順）
+              items:
+                type: string
+                example: "日本花子"
+                description: |-
+                  候補
+        version:
+          type: string
+          example: 1.8o
+          description: |-
+            氏名漢字カナ突合モデルのバージョン
+    responsePredictKanaSuccess:
+      description: |-
+        カナ氏名推定成功レスポンス
+      type: object
+      properties:
+        response:
+          type: string
+          example: OK
+          description: |-
+            受付結果
+            | 応答コード | 説明 |
+            | :---       | :--- |
+            | OK         | 正常終了 |
+            | E001       | クエリパラメータ kanji の設定がされていない、又は例外値 (文字長0) が設定されている |
+            | E010       | クエリパラメータ max に例外値が設定されている |
+            | E100       | 内部エラー |
+            | E404       | HTTP 404 エラー |
+            | E500       | HTTP 500 エラー |
+        result:
+          type: object
+          description: |-
+            response が "OK" の場合、結果を格納したオブジェクトを返却する。
+            response が "OK" 以外の場合、空のオブジェクト "{}" を返却する。
+          properties:
+            status:
+              type: integer
+              example: OK
+              description: |-
+                処理結果
+                | 応答コード | 説明 |
+                | :---       | :--- |
+                | OK         | 正常終了 |
+                | NG         | 異常終了 |
+            probability:
+              type: array
+              example:
+                [
+                  0.6937584041873546,
+                  0.01117801634667634,
+                  3.800085867851474e-7,
+                  2.593153688493599e-7,
+                  6.6314047768254374e-9,
+                ]
+              description: |-
+                候補の推定正解確率
+              items:
+                type: number
+                example: 0.6937584041873546
+                description: |-
+                  推定正解確率
+                minimum: 0
+                maximum: 1
+            kana:
+              type: array
+              example:
+                [
+                  "ニホンハナコ",
+                  "ニッポンハナコ",
+                  "ニホンバナコ",
+                  "ニホンカコ",
+                  "ニホンカシ",
+                ]
+              description: |-
+                候補（確率降順）
+              items:
+                type: string
+                example: "ニホンハナコ"
+                description: |-
+                  候補
+        version:
+          type: string
+          example: 1.8o
+          description: |-
+            氏名漢字カナ突合モデルのバージョン
+    responseAuthFailed:
+      description: |-
+        認証失敗レスポンス
+      type: object
+      properties:
+        message:
+          type: string
+          example: Unauthorized
+          description: |-
+            メッセージ

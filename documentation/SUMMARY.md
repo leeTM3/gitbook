@@ -7,6 +7,8 @@
 * [Getting started](getting-started/getting-started.md)
 * [Quickstart](getting-started/quickstart.md)
 * [Your first project](getting-started/your-first-project.md)
+* [フロー](getting-started/fur.md)
+* [フローDB](getting-started/flowdb.md)
 
 ## Core concepts
 

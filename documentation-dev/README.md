@@ -5,7 +5,7 @@ description: >-
 icon: hand-wave
 ---
 
-# Welcome
+# Welcome-dev
 
 Welcome to the platform. These docs cover everything from your first project to advanced workflows — pick a starting point below or ask the Assistant to jump straight to what you need.
 

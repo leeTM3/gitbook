@@ -70,3 +70,16 @@ site:
           default: true
           content:
             directory: ./help-center
+    - type: section
+      key: section-6
+      title: documentation-dev
+      path: documentation-dev
+      children:
+        - type: space
+          key: space-6
+          title: documentation-dev
+          path: documentation-dev
+          default: true
+          draft: true
+          content:
+            directory: ./documentation-dev

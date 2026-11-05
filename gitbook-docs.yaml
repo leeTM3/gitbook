@@ -72,12 +72,13 @@ site:
             directory: ./help-center
     - type: section
       key: section-6
-      title: documentation-dev
+      title: ドキュメントdev
       path: documentation-dev
+      description: ""
       children:
         - type: space
           key: space-6
-          title: documentation-dev
+          title: ドキュメントdev
           path: documentation-dev
           default: true
           draft: true
